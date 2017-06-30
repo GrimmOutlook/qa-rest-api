@@ -37,7 +37,16 @@ router.delete('/:qID/answers/:aID', (req, res) => {
 //POST request for questions/:qID/answers/:aID/vote-up
 //POST request for questions/:qID/answers/:aID/vote-down
 //Vote on a specific answer
-router.post('/:qID/answers/:aID/vote-:dir', (req, res) => {
+router.post('/:qID/answers/:aID/vote-:dir', (req, res, next) => {
+    if(req.params.dir.search(/^(up|down)$/) === -1){
+      const err= new Error(`Please vote up or down, not ${req.params.dir}`);
+      err.status = 404;
+      next(err);
+    }
+    else{
+      next();
+    }
+  }, (req, res) => {
   res.json({response: `You sent a POST request to /answers/:aID/vote-${req.params.dir}`,
     questionId: req.params.qID,
     answerId: req.params.aID,
